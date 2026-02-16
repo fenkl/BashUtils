@@ -1,0 +1,55 @@
+version: "3.9"
+
+networks:
+  system:
+    driver: overlay
+
+volumes:
+  system_uploads: {}
+  # Optional: Named Volume für Logs
+  # system_logs: {}
+
+secrets:
+  flask_secret_key:
+    external: true
+
+services:
+  backend:
+    image: dockerhub-be-01.local.org/system-backend:v1.14
+    networks: [system]
+    environment:
+      FLASK_ENV: development  # TODO: auf production für docker-manager!
+      SECRET_KEY_FILE: /run/secrets/flask_secret_key
+      # Weitere ENVs hier...
+    secrets: # TODO: SECRET KEY bereitstellen
+      - source: flask_secret_key
+        target: flask_secret_key
+    volumes:
+      - system_uploads:/app/uploads
+    deploy:
+      replicas: 3
+      restart_policy: { condition: on-failure, delay: 5s, max_attempts: 5 }
+      update_config: { parallelism: 1, order: start-first }
+      rollback_config: { parallelism: 1, order: stop-first }
+      resources:
+        limits: { cpus: "1.0", memory: 1024M } # Etwas mehr RAM für Playwright/OpenCV
+        reservations: { cpus: "0.25", memory: 256M }
+
+  frontend:
+    image: dockerhub-be-01.local.org/system-frontend:v1.14
+    networks: [system]
+    ports:
+      - target: 80
+        published: 26015
+        protocol: tcp
+        #mode: ingress
+        mode: host
+    depends_on: [backend]
+    deploy:
+      replicas: 3
+      restart_policy: { condition: any }
+      update_config: { parallelism: 1, order: stop-first }
+      rollback_config: { parallelism: 1, order: stop-first }
+      resources:
+        limits: { cpus: "0.5", memory: 128M }
+        reservations: { cpus: "0.1", memory: 64M }
