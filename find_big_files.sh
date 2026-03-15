@@ -1,15 +1,11 @@
 #!/bin/bash
 
+# Root-Prüfung einbinden
+source "$(dirname "$0")/check_root.sh"
+
 # Skript beenden, wenn ein Befehl fehlschlägt oder eine nicht deklarierte Variable verwendet wird
 # set -euo pipefail
 # set -x  # für detailliertes Debugging
-
-# Überprüfen, ob das Skript als root ausgeführt wird
-if [ "$(id -u)" -ne 0 ]; then
-   echo "Bitte als root ausführen"
-   exit 1
-fi
-
 
 # Finde die drei größten Verzeichnisse unter root (/), aber schließe / selbst aus.
 echo "Größte 3 Verzeichnisse unter / (ohne / selbst):"
