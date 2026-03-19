@@ -1,9 +1,6 @@
 #!/bin/sh
-# Überprüfen, ob das Skript als root ausgeführt wird
-if [ "$(id -u)" -ne 0 ]; then
-   echo "Bitte als root ausführen"
-   exit 1
-fi
 
+# Root-Prüfung einbinden (kompatibel mit /bin/sh über den Punkt)
+. "$(dirname "$0")/check_root.sh"
 dpkg --purge $(dpkg -l | awk '/^rc/ {print $2}')
 
