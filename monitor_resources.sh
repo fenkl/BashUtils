@@ -73,8 +73,8 @@ while true; do
     # Wir nutzen ps mit sort nach cpu.
     ps -eo pid,user,%cpu,%mem,args --sort=-%cpu | head -n $((LIMIT + 1)) | tail -n +2 | while read pid user cpu mem args; do
         # Kürzen des Befehls auf die restliche Breite
-        local cmd_width=$((cols - 35))
-        [ $cmd_width -lt 10 ] && cmd_width=40
+        cmd_width=$((cols - 35))
+        [ "$cmd_width" -lt 10 ] && cmd_width=40
         printf "%-8s %-12s %-8s %-8s %-.*s\n" "$pid" "$user" "$cpu" "$mem" "$cmd_width" "$args"
     done
     echo ""
@@ -83,8 +83,8 @@ while true; do
     draw_header "Top $LIMIT Speicher-Fresser" "$GREEN"
     ps -eo pid,user,%cpu,%mem,args --sort=-%mem | head -n $((LIMIT + 1)) | tail -n +2 | while read pid user cpu mem args; do
         # Kürzen des Befehls auf die restliche Breite
-        local cmd_width=$((cols - 35))
-        [ $cmd_width -lt 10 ] && cmd_width=40
+        cmd_width=$((cols - 35))
+        [ "$cmd_width" -lt 10 ] && cmd_width=40
         printf "%-8s %-12s %-8s %-8s %-.*s\n" "$pid" "$user" "$cpu" "$mem" "$cmd_width" "$args"
     done
     
