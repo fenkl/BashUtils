@@ -46,6 +46,31 @@ while getopts "i:l:n:h" opt; do
     esac
 done
 
+# Funktion zum Zeichnen der System-Infos
+draw_system_info() {
+    local cols=$(tput cols 2>/dev/null || echo 80)
+    
+    # Daten sammeln
+    local load=$(cat /proc/loadavg 2>/dev/null | cut -d' ' -f1-3 || uptime | awk -F'load average:' '{ print $2 }')
+    local mem=$(free -h 2>/dev/null | awk '/Mem:/ { printf "%s / %s", $3, $2 }' || echo "N/A")
+    local disk=$(df -h / 2>/dev/null | awk 'NR==2 { printf "%s / %s (%s)", $3, $2, $5 }' || echo "N/A")
+    local uptime_p=$(uptime -p 2>/dev/null || uptime)
+    
+    local temp=""
+    if [ -f /sys/class/thermal/thermal_zone0/temp ]; then
+        local raw_temp=$(cat /sys/class/thermal/thermal_zone0/temp)
+        temp=" | Temp: $((raw_temp / 1000))°C"
+    fi
+
+    echo -e "${BLUE}${BOLD}SYSTEMÜBERSICHT${NC}"
+    echo -e "${BLUE}$(printf '%*s' "$cols" '' | tr ' ' '-') ${NC}"
+    printf "${CYAN}%-12s${NC} %s\n" "Uptime:" "$uptime_p"
+    printf "${CYAN}%-12s${NC} %s\n" "Load Avg:" "$load"
+    printf "${CYAN}%-12s${NC} %s\n" "Speicher:" "$mem"
+    printf "${CYAN}%-12s${NC} %s%s\n" "Disk (/):" "$disk" "$temp"
+    echo ""
+}
+
 # Funktion zum Zeichnen der Header
 draw_header() {
     local title=$1
@@ -55,6 +80,14 @@ draw_header() {
     echo -e "${color}$(printf '%*s' "$cols" '' | tr ' ' '=') ${NC}"
     printf "${BOLD}%-8s %-12s %-8s %-8s %s${NC}\n" "PID" "USER" "CPU%" "MEM%" "COMMAND"
 }
+
+# Cleanup-Funktion für temporäre Dateien
+cleanup() {
+    [ -n "$temp_file" ] && [ -f "$temp_file" ] && rm -f "$temp_file"
+}
+
+# Signal-Handler setzen (Strg+C, beenden)
+trap "cleanup; exit" SIGINT SIGTERM
 
 # Hauptschleife
 count=0
@@ -68,10 +101,16 @@ while true; do
     echo -e "${MAGENTA}${BOLD}--- Ressourcen-Monitor | Intervall: ${INTERVAL}s | Limit: Top $LIMIT | Durchlauf: $((count + 1))${ITERATIONS:+/$ITERATIONS} | $(date '+%H:%M:%S') ---${NC}"
     echo ""
 
+    # System-Infos anzeigen
+    draw_system_info
+
+    # Daten sammeln (einmal für beide Kategorien, um Ressourcen zu sparen)
+    temp_file=$(mktemp)
+    ps -eo pid,user,%cpu,%mem,args --sort=-%cpu --no-headers > "$temp_file"
+
     # Top CPU Prozesse
     draw_header "Top $LIMIT CPU-Fresser" "$RED"
-    # Wir nutzen ps mit sort nach cpu.
-    ps -eo pid,user,%cpu,%mem,args --sort=-%cpu | head -n $((LIMIT + 1)) | tail -n +2 | while read pid user cpu mem args; do
+    head -n "$LIMIT" "$temp_file" | while read pid user cpu mem args; do
         # Kürzen des Befehls auf die restliche Breite
         cmd_width=$((cols - 35))
         [ "$cmd_width" -lt 10 ] && cmd_width=40
@@ -79,14 +118,17 @@ while true; do
     done
     echo ""
 
-    # Top Memory Prozesse
+    # Top Memory Prozesse (Umsortieren der gesammelten Daten)
     draw_header "Top $LIMIT Speicher-Fresser" "$GREEN"
-    ps -eo pid,user,%cpu,%mem,args --sort=-%mem | head -n $((LIMIT + 1)) | tail -n +2 | while read pid user cpu mem args; do
+    # Sortiert nach der 4. Spalte (%MEM), numerisch, absteigend
+    sort -k4 -rn "$temp_file" | head -n "$LIMIT" | while read pid user cpu mem args; do
         # Kürzen des Befehls auf die restliche Breite
         cmd_width=$((cols - 35))
         [ "$cmd_width" -lt 10 ] && cmd_width=40
         printf "%-8s %-12s %-8s %-8s %-.*s\n" "$pid" "$user" "$cpu" "$mem" "$cmd_width" "$args"
     done
+    
+    rm -f "$temp_file"
     
     echo ""
     echo -e "${CYAN}Drücke [Strg+C] zum Beenden.${NC}"
