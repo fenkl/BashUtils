@@ -1,0 +1,26 @@
+# JetBrains (PyCharm)
+.idea/
+
+# Shell/Bash logs
+*.log
+*.out
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# Docker
+.docker/
+*.env
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+*~
+*.bak
