@@ -5,6 +5,7 @@ Eine Sammlung nützlicher Bash-Skripte zur Systemverwaltung.
 
 ### system/
 Allgemeine System- und Wartungsskripte.
+- **enable_history_timestamp.sh**: Erweitert die Bash-History-Speicherung um Datum und Uhrzeit.
 - **monitor_resources.sh**: Überwacht Top CPU- und Speicherfresser mit konfigurierbaren Intervallen.
 - **find_big_files.sh**: Findet die größten Dateien und Verzeichnisse.
 - **update.sh**: Führt Systemaktualisierungen durch.
