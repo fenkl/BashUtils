@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Root-Prüfung einbinden
-source "$(dirname "$0")/check_root.sh"
+source "$(dirname "$0")/../utils/check_root.sh"
 
 # Skript beenden, wenn ein Befehl fehlschlägt oder eine nicht deklarierte Variable verwendet wird
 # set -euo pipefail

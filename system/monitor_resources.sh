@@ -4,7 +4,7 @@
 # Findet Top CPU- und Speicherfresser mit konfigurierbarem Intervall.
 
 # Root-Prüfung (optional, da ps oft auch als User geht, aber für mehr Details besser als root)
-# source "$(dirname "$0")/check_root.sh"
+# source "$(dirname "$0")/../utils/check_root.sh"
 
 # Farben für die Ausgabe
 RED='\033[0;31m'

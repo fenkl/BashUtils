@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Root-Prüfung einbinden
-source "$(dirname "$0")/check_root.sh"
+source "$(dirname "$0")/../utils/check_root.sh"
 
 echo "Starte Bereinigung von Snaps..."
 echo "Führe Löschung alter Snap-Versionen aus..." 
