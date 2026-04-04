@@ -19,12 +19,49 @@ send_avr() {
   echo ""
 }
 
-# Funktion für HEOS API-Befehle (Port 1255)
-# Fügt \r\n hinzu, da das HEOS-Protokoll das oft bevorzugt.
+# Normale HEOS-Funktion (gibt rohes JSON aus)
 send_heos() {
   echo "Sende HEOS-Befehl: $1"
   # Wir lassen nc 2 Sekunden warten (-w 2) und werfen die Ausgabe direkt auf den Bildschirm
   echo -e "$1\r\n" | nc -w 2 $IP $PORT_HEOS
+  echo ""
+}
+
+# Spezielle Funktion für "Now Playing", die das JSON hübsch formatiert
+get_now_playing_pretty() {
+  local PID=$1
+  echo "Rufe aktuelle Wiedergabe ab..."
+
+  # Speichere die rohe JSON-Antwort in einer Variable
+  local raw_json=$(echo -e "heos://player/get_now_playing_media?pid=$PID\r\n" | nc -w 2 $IP $PORT_HEOS)
+
+  # Prüfen, ob ein Fehler zurückkam (z.B. wenn gar nichts läuft)
+  if echo "$raw_json" | grep -q '"result": "fail"'; then
+    echo "Es wird aktuell nichts abgespielt oder die Quelle unterstützt diese Abfrage nicht."
+    return
+  fi
+
+  # Extrahieren der Werte mit grep und sed (entfernt Anführungszeichen und Kommas)
+  local song=$(echo "$raw_json" | grep -o '"song": "[^"]*' | sed 's/"song": "//')
+  local artist=$(echo "$raw_json" | grep -o '"artist": "[^"]*' | sed 's/"artist": "//')
+  local album=$(echo "$raw_json" | grep -o '"album": "[^"]*' | sed 's/"album": "//')
+  local station=$(echo "$raw_json" | grep -o '"station": "[^"]*' | sed 's/"station": "//')
+
+  echo "-----------------------------------------------------"
+  echo "                  JETZT LÄUFT                        "
+  echo "-----------------------------------------------------"
+
+  # Nur anzeigen, was auch wirklich befüllt ist
+  [[ -n "$song" ]]    && echo " Titel:   $song"
+  [[ -n "$artist" ]]  && echo " Künstler:$artist"
+  [[ -n "$album" ]]   && echo " Album:   $album"
+  [[ -n "$station" ]] && echo " Sender:  $station"
+
+  # Falls alles leer ist (z.B. bei analogem Input)
+  if [[ -z "$song" && -z "$artist" && -z "$station" ]]; then
+     echo " (Unbekannte Medien-Informationen. Eventuell externer Input wie TV/CD?)"
+  fi
+  echo "-----------------------------------------------------"
   echo ""
 }
 
@@ -46,7 +83,7 @@ explore_heos() {
   echo "[+] Gefundene Player ID: $PID"
   echo "====================================================="
   echo "1 - check_account   (Prüft den angemeldeten HEOS-Account)"
-  echo "2 - get_now_playing (Zeigt an, was gerade läuft)"
+  echo "2 - get_now_playing (Zeigt an, was gerade läuft - FORMATIERT!)"
   echo "3 - get_play_state  (Zeigt an, ob gerade Musik spielt oder pausiert ist)"
   echo "4 - toggle_mute     (Schaltet HEOS stumm / laut)"
   echo "5 - volume_up       (HEOS Lautstärke +5)"
@@ -54,18 +91,12 @@ explore_heos() {
   echo "b - Zurück zum Hauptmenü"
   echo "====================================================="
 
-  # Beachte: Für viele HEOS-Befehle braucht man die "Player ID" (pid).
-  # Befehl 2 liefert diese ID. Um es im Bash-Skript simpel zu halten,
-  # fragen wir hier zunächst ohne spezifische Player ID ab (was bei
-  # get_players und check_account immer funktioniert).
-  # Wenn du nur einen AVR hast, ignoriert get_now_playing oft die fehlende PID.
-
   while true; do
     read -p "HEOS Explorer> " heos_cmd
 
     case "$heos_cmd" in
       1) send_heos "heos://system/check_account" ;;
-      2) send_heos "heos://player/get_now_playing_media?pid=$PID" ;;
+      2) get_now_playing_pretty "$PID" ;;
       3) send_heos "heos://player/get_play_state?pid=$PID" ;;
       4) send_heos "heos://player/toggle_mute?pid=$PID" ;;
       5) send_heos "heos://player/set_volume?pid=$PID&step=5" ;;
@@ -98,7 +129,6 @@ show_help() {
   echo "  SINET     - Quelle: HEOS / Network"
   echo ""
   echo "  exit / q  - Beendet das Skript"
-  echo "  (Jeder andere Text wird als Marantz-Befehl an Port 23 gesendet)"
   echo "====================================================="
 }
 
