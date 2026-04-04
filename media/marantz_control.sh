@@ -143,7 +143,7 @@ while true; do
   fi
 
   case "$cmd" in
-    help|h|?) show_help ;;
+    help|h|\?) show_help ;;
     status)
       send_avr "PW?"
       send_avr "MV?"
