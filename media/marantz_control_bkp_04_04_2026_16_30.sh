@@ -23,7 +23,6 @@ send_avr() {
 # Fügt \r\n hinzu, da das HEOS-Protokoll das oft bevorzugt.
 send_heos() {
   echo "Sende HEOS-Befehl: $1"
-  # Wir lassen nc 2 Sekunden warten (-w 2) und werfen die Ausgabe direkt auf den Bildschirm
   echo -e "$1\r\n" | nc -w 2 $IP $PORT_HEOS
   echo ""
 }
@@ -32,25 +31,12 @@ explore_heos() {
   echo "====================================================="
   echo "                HEOS API EXPLORER                    "
   echo "====================================================="
-
-  echo "Hole Player ID (PID) vom Receiver..."
-  # Wir holen die JSON-Antwort und extrahieren die PID mit grep und awk
-  players_json=$(echo -e "heos://system/get_players\r\n" | nc -w 2 $IP $PORT_HEOS)
-  PID=$(echo "$players_json" | grep -o '"pid": [0-9\-]*' | head -1 | awk -F': ' '{print $2}')
-
-  if [[ -z "$PID" ]]; then
-    echo "[!] Konnte PID nicht ermitteln. Ist der Receiver an?"
-    return
-  fi
-
-  echo "[+] Gefundene Player ID: $PID"
-  echo "====================================================="
+  echo "Die Antworten vom Receiver kommen im JSON-Format."
+  echo ""
   echo "1 - check_account   (Prüft den angemeldeten HEOS-Account)"
-  echo "2 - get_now_playing (Zeigt an, was gerade läuft)"
-  echo "3 - get_play_state  (Zeigt an, ob gerade Musik spielt oder pausiert ist)"
-  echo "4 - toggle_mute     (Schaltet HEOS stumm / laut)"
-  echo "5 - volume_up       (HEOS Lautstärke +5)"
-  echo "6 - volume_down     (HEOS Lautstärke -5)"
+  echo "2 - get_players     (Gibt alle HEOS-Geräte im Netzwerk aus)"
+  echo "3 - get_now_playing (Zeigt an, welcher Song/Sender läuft!)"
+  echo "4 - network_status  (WLAN/LAN Status des Receivers)"
   echo "b - Zurück zum Hauptmenü"
   echo "====================================================="
 
@@ -65,13 +51,19 @@ explore_heos() {
 
     case "$heos_cmd" in
       1) send_heos "heos://system/check_account" ;;
-      2) send_heos "heos://player/get_now_playing_media?pid=$PID" ;;
-      3) send_heos "heos://player/get_play_state?pid=$PID" ;;
-      4) send_heos "heos://player/toggle_mute?pid=$PID" ;;
-      5) send_heos "heos://player/set_volume?pid=$PID&step=5" ;;
-      6) send_heos "heos://player/set_volume?pid=$PID&step=-5" ;;
-      b|back|q) break ;;
-      *) echo "Unbekannte Eingabe. Bitte wähle 1-6 oder 'b' für zurück." ;;
+      2) send_heos "heos://system/get_players" ;;
+      3)
+         echo "Tipp: Falls das nicht klappt, musst du mit Befehl '2' deine"
+         echo "Player ID (pid) herausfinden und den Befehl manuell anpassen."
+         send_heos "heos://player/get_now_playing_media"
+         ;;
+      4) send_heos "heos://system/get_network_status" ;;
+      b|back) break ;;
+      q|quit|exit)
+        echo "Programm wird beendet."
+        exit 0
+        ;;
+      *) echo "Unbekannte Eingabe. Bitte wähle 1-4 oder 'b' für zurück." ;;
     esac
   done
 }
@@ -82,9 +74,9 @@ show_help() {
   echo "====================================================="
   echo "  help      - Zeigt diese Hilfe an"
   echo "  status    - Fragt den Status ab (PW?, MV?, MU?, SI?)"
-  echo "  heos      - Öffnet den HEOS API Explorer (Port 1255)"
+  echo "  heos      - [NEU] Öffnet den HEOS API Explorer (Port 1255)"
   echo ""
-  echo "--- Strom & Lautstärke (Port 23) ---"
+  echo "--- Strom & Lautstärke (Main Zone) ---"
   echo "  PWON      - Gerät einschalten"
   echo "  PWSTANDBY - Gerät in den Standby-Modus versetzen"
   echo "  MVUP      - Lautstärke hoch"
@@ -102,7 +94,10 @@ show_help() {
   echo "====================================================="
 }
 
-echo "Willkommen zur Marantz Steuerung!"
+echo "Stelle Verbindung her und frage initialen Status ab..."
+send_avr "PW?"
+
+echo ""
 echo "Geben Sie 'help' ein, um alle Befehle zu sehen."
 
 while true; do
