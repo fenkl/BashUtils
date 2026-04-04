@@ -133,7 +133,7 @@ show_help() {
 }
 
 echo "Willkommen zur Marantz Steuerung!"
-echo "Geben Sie 'help' ein, um alle Befehle zu sehen."
+show_help
 
 while true; do
   read -p "Marantz> " cmd
