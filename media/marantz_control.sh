@@ -134,6 +134,7 @@ show_help() {
 
 echo "Willkommen zur Marantz Steuerung!"
 show_help
+send_avr "PW?"
 
 while true; do
   read -p "Marantz> " cmd
