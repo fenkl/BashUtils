@@ -83,7 +83,7 @@ draw_system_info() {
     local load=$(cat /proc/loadavg 2>/dev/null | cut -d' ' -f1-3 || uptime | awk -F'load average:' '{ print $2 }' | sed 's/^ //')
     
     # Speicher mit Balken
-    local mem_raw=$(free 2>/dev/null | awk '/Mem:/ { print $3,$2 }')
+    local mem_raw=$(free 2>/dev/null | awk '/Mem:/ { printf "%.0f %.0f\n", $3, $2 }')
     local mem_total=$(echo "$mem_raw" | awk '{print $2}')
     local mem_used=$(echo "$mem_raw" | awk '{print $1}')
     local mem_p=0
@@ -97,7 +97,7 @@ draw_system_info() {
     local net_info="N/A"
     if [ -f /proc/net/dev ]; then
         local now=$(date +%s)
-        local cur_net=$(awk '/eth0|enp|wlan/ { rx+=$2; tx+=$10 } END { print rx,tx }' /proc/net/dev)
+        local cur_net=$(awk '/eth0|enp|wlan/ { rx+=$2; tx+=$10 } END { printf "%.0f %.0f\n", rx, tx }' /proc/net/dev)
         local cur_rx=$(echo "$cur_net" | cut -d' ' -f1)
         local cur_tx=$(echo "$cur_net" | cut -d' ' -f2)
         
