@@ -9,8 +9,9 @@ PORT_HEOS="1255"
 cleanup() {
   echo "Führe Aufräumarbeiten durch..."
   # Platzhalter für zukünftige Aufräumarbeiten
+  exit 0
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT INT TERM SIGTERM
 
 # Funktion für Standard AVR-Befehle (Port 23)
 send_avr() {
