@@ -28,3 +28,6 @@ Interne Hilfsskripte.
 Docker-Konfigurationen und Deployment-Skripte.
 - **deploy_docker_stack.sh**: Skript zum Deployment eines Docker Stacks.
 - **docker-stack.yml**: Docker Stack Definition.
+
+## Zukünftige Features
+Weitere Ideen und geplante Skripte findest du in der [todo.md](todo.md).
