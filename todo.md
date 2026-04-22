@@ -19,7 +19,7 @@ Skripte zur Wartung, Sicherheit und Überwachung des Host-Systems.
     - Analyse fehlgeschlagener Login-Versuche (`lastb`).
     - Suche nach Dateien mit SUID/SGID-Bit.
 - [ ] **Automated-Rsync-Backup**: Ein flexibles Skript für regelmäßige Backups wichtiger Verzeichnisse (`/etc/`, `/var/www/`, `/home/`) auf einen Remote-Server via SSH/Rsync.
-- [ ] **Interactive-User-Management**: Menügeführtes Skript zum Anlegen/Löschen von Benutzern, Verwalten von sudo-Rechten und SSH-Public-Keys.
+- [x] **Interactive-User-Management**: Menügeführtes Skript zum Anlegen/Löschen von Benutzern, Verwalten von sudo-Rechten und SSH-Public-Keys.
 - [ ] **Network-Inventory**: Scannt das lokale Subnetz nach aktiven Geräten und listet IP-Adressen sowie Hostnamen auf (nutzt `nmap` falls vorhanden).
 - [ ] **Disk-Space-Alarm**: Monitoring-Skript für die Festplattenkapazität, das bei Überschreiten eines Schwellenwerts (z.B. 90%) eine Warnung ausgibt.
 - [ ] **Update-Checker**: Prüft im Hintergrund auf verfügbare Paket-Updates (`apt list --upgradable`) und informiert den Administrator.
