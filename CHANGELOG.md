@@ -5,6 +5,11 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-04-23
+
+### Hinzugefügt
+- Interaktive Benutzerverwaltung (`system/interactive_user_management.sh`) inklusive Tests und Dokumentation. [dda66c7](https://github.com/fenkl/BashUtils/commit/dda66c7)
+
 ## [0.5.1] - 2026-04-23
 
 ### Hinzugefügt
