@@ -22,6 +22,8 @@ DEFAULT_LOGS=(
     "$LOG_DIR/fail2ban.log"
     "$LOG_DIR/dpkg.log"
     "$LOG_DIR/user.log"
+    "$LOG_DIR/pihole/FTL.log"
+    "$LOG_DIR/pihole/pihole.log"
 )
 
 # Filtern der Standard-Logs: Nur existierende (und lesbare) Dateien aufnehmen
