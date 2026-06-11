@@ -20,17 +20,11 @@ Um die Skripte nutzen zu können, sollten folgende Voraussetzungen erfüllt sein
 
 1.  **Repository klonen:**
     ```bash
-    git clone https://github.com/ihr-benutzername/BashUtils.git
+    git clone https://github.com/fenkl/BashUtils.git
     cd BashUtils
     ```
 
-2.  **Berechtigungen setzen:**
-    Vor der Ausführung müssen die Skripte ausführbar gemacht werden:
-    ```bash
-    chmod +x system/*.sh media/*.sh dev/*.sh docker/*.sh utils/*.sh
-    ```
-
-3.  **Skript ausführen:**
+2.  **Skript ausführen:**
     Viele Skripte bieten eine Hilfe-Funktion via `-h` an.
     ```bash
     ./system/monitor_resources.sh -i 2 -l 5
@@ -91,11 +85,5 @@ Wir orientieren uns am [Google Shell Style Guide](https://google.github.io/style
 - Dateinamen verwenden `snake_case`.
 - Bedingungen nutzen vorzugsweise `[[ ... ]]`.
 
-## 📝 Lizenz & Autor
-
-- **Autor:** Ihr Name / Projekt-Team
-- **Lizenz:**
-  - **TODO:** Lizenz (z.B. MIT oder GPL) festlegen und `LICENSE`-Datei hinzufügen.
-
 ---
-*Weitere Ideen und geplante Features findest du in der [todo.md](todo.md).*
+*Weitere Ideen und geplante Features findest du in der [TODO.md](TODO.md).*

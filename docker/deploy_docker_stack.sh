@@ -92,7 +92,7 @@ PID_FRONTEND=$!
 # Backend
 (
     echo "[Backend] Build gestartet..."
-    docker build -f backend/app/Dockerfile -t $REGISTRY/$APP_NAME-backend:$TAG . --no-cache && \
+    docker build -f backend/Dockerfile -t $REGISTRY/$APP_NAME-backend:$TAG . --no-cache && \
     docker push $REGISTRY/$APP_NAME-backend:$TAG
 
     if [ $? -eq 0 ]; then
