@@ -50,6 +50,9 @@ Um die Skripte nutzen zu können, sollten folgende Voraussetzungen erfüllt sein
 - **`purge_remove_packages.sh`**: Entfernt Pakete restlos inklusive ihrer Konfiguration.
 - **`snap_remove_disabled_packages.sh`**: Löscht deaktivierte Snap-Revisionen, um Speicherplatz freizugeben.
 - **`interactive_user_management.sh`**: Interaktives Menü zum Anlegen/Löschen von Benutzern, Verwalten von sudo-Rechten und SSH-Public-Keys.
+- **`disk_space_alarm.sh`**: Überwacht die Festplattenauslastung und warnt bei Überschreitung konfigurierbarer Schwellenwerte. Ideal für Cron-Jobs und Monitoring.
+  - *Optionen:* `-t` (kritischer Schwellenwert), `-w` (Warn-Schwellenwert), `-p` (Pfad), `-f` (Logging), `-q` (Quiet-Modus).
+  - *Exit-Codes:* `0` (OK), `2` (Warnung), `3` (Kritisch) – perfekt für Automatisierung.
 
 ### Mediensteuerung (`media/`)
 - **`marantz_control.sh`**: Interaktives Menü zur Steuerung von Marantz-Receivern. Erlaubt die Kontrolle der Lautstärke, Eingänge und Abfrage von HEOS-Informationen.

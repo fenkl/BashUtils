@@ -40,7 +40,7 @@ Diese Liste dokumentiert den aktuellen Stand des Projekts sowie geplante Erweite
     - [ ] **Docker-Image-Pruner**: Erweitertes Bereinigungsskript für Images.
     - [ ] **System-Security-Audit**: Schnellcheck für offene Ports, fehlgeschlagene Logins etc.
     - [ ] **Automated-Rsync-Backup**: Flexibles Rsync-basiertes Backup-Skript.
-    - [ ] **Disk-Space-Alarm**: Monitoring-Skript für die Festplattenkapazität mit Warnung.
+    - [x] **Disk-Space-Alarm**: Monitoring-Skript für die Festplattenkapazität mit Warnung (`system/disk_space_alarm.sh`).
 
 ## ⚙️ Umgebungsvariablen
 - **Status:** Variablen sind meist hartcodiert in den Skripten; teilweise Unterstützung für `LOG_DIR`.
